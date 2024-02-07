@@ -1,0 +1,53 @@
+.grid .board {
+  position: relative;
+}
+
+.grid .spaced {
+  margin: 20px 0;
+}
+
+.grid .row {
+  display: flex;
+}
+
+.grid .row .col {
+  background-color: red;
+  flex: 1 1 0px;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.grid .controls {
+  display: flex;
+  gap: 15px;
+}
+
+.grid .controls .info {
+  text-align:center;
+  font-size: 1.5em;
+}
+
+.grid .controls div {
+  flex: 1 1 0px;
+}
+
+.grid .controls div button {
+  width: 100%;
+  padding: 10px;
+}
+
+.grid .message {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
+  font-size: 64px;
+  color: #09c;
+  text-shadow: 1px 1px 2px black;
+  user-select: none;
+}
