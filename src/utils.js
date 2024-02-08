@@ -145,6 +145,113 @@ export const openSquare = (originalBoard, row, col) => {
   return board;
 };
 
+export const openSquareRecursiveSet = (originalBoard, row, col) => {
+  const board = JSON.parse(JSON.stringify(originalBoard));
+
+  const openSquareSet = new Set();
+
+  const recursivelyOpenSquare = (b, r, c) => {
+    const squareTag = `${r},${c}`;
+
+    if (openSquareSet.has(squareTag)) {
+      // console.log(`already visited ${squareTag}`);
+      return;
+    }
+
+    const s = getSquare(b, r, c);
+
+    if (!s || s.open || s.flagged) {
+      // console.log(`can't open ${squareTag}`);
+      return;
+    }
+
+    openSquareSet.add(squareTag);
+
+    // console.log(`recursively check ${squareTag}`);
+
+    // s.open = true;
+
+    // if the square has a value > 0 (not open) or is a mine (game ends anyway), bail out here
+    if (s.value !== 0 || s.mine) {
+      return;
+    }
+
+    // //game logic method will check if any square is both a mine and open
+
+    for (let x = -1; x <= 1; x += 1) {
+      for (let y = -1; y <= 1; y += 1) {
+        if (x === 0 && y === 0) {
+          continue;
+        }
+        const nextTag = `${r + x},${c + y}`;
+        if (!openSquareSet.has(nextTag)) {
+          recursivelyOpenSquare(b, r + x, c + y);
+        }
+      }
+    }
+  };
+
+  recursivelyOpenSquare(board, row, col, []);
+  const openPositions = [...openSquareSet];
+
+  // update board
+
+  // console.log('open positions', openPositions);
+
+  for (const openPosition of openPositions) {
+    const pos = openPosition.split(',');
+    const s = getSquare(board, pos[0], pos[1]);
+    s.open = true;
+  }
+
+  return board;
+};
+
+export const openSquareRecursive = (originalBoard, row, col) => {
+  const board = JSON.parse(JSON.stringify(originalBoard));
+
+  // TODO optimize this by adding each r,c to a set as we keep hitting open squares, then open everything in the set
+  const recursivelyOpenSquare = (r, c) => {
+    // console.log(`recursively check ${r},${c}`);
+
+    const s = getSquare(board, r, c);
+
+    if (!s) {
+      return board;
+    }
+
+    if (s.open || s.flagged) {
+      // already opened, or shouldn't be opened
+      return board;
+    }
+
+    s.open = true;
+
+    // game logic method will check if any square is both a mine and open
+    if (s.mine) {
+      // boom!
+      return board;
+    }
+
+    // if this is a zero, open all touching squares recursively
+    // since open checks validity, just try each direction
+    if (s.value === 0) {
+      recursivelyOpenSquare(r - 1, c);
+      recursivelyOpenSquare(r + 1, c);
+      recursivelyOpenSquare(r, c - 1);
+      recursivelyOpenSquare(r, c + 1);
+      recursivelyOpenSquare(r + 1, c + 1);
+      recursivelyOpenSquare(r - 1, c - 1);
+      recursivelyOpenSquare(r + 1, c - 1);
+      recursivelyOpenSquare(r - 1, c + 1);
+    }
+  };
+
+  recursivelyOpenSquare(row, col);
+
+  return board;
+};
+
 export const updateValues = (originalBoard) => {
   const board = JSON.parse(JSON.stringify(originalBoard));
 
